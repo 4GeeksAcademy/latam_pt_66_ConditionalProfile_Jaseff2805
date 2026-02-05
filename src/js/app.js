@@ -8,8 +8,8 @@ import "../style/index.css";
         includeCover: true, // if includeCover is true the algorithm should show the cover image
         background: "https://images.unsplash.com/photo-1511974035430-5de47d3b95da", // this is the image's url that will be used as a background for the profile cover
         avatarURL: "https://randomuser.me/api/portraits/women/42.jpg", // this is the url for the profile avatar
-        socialMediaPosition: "position-right", // social media bar position (position-left or position-right)
-        //for social media links, only update usernames
+        socialMediaPosition: "right", // social media bar position (left or right)
+        
         twitter: null, // social media usernames
         github: null,
         linkedin: null,
@@ -29,21 +29,58 @@ function render(variables = {}) {
   let cover = `<div class="cover"><img src="${variables.background}" /></div>`;
   if (variables.includeCover == false) cover = "<div class='cover'></div>";
 
+  // Definición de variables de Datos Personales
+  const name = variables.name ? variables.name : "Put your name";
+  const lastName = variables.lastName
+    ? variables.lastName
+    : "- Put your Lastname";
+  const fullname = `${name} ${lastName}`.trim();
+  const role = variables.role ? variables.role : "";
+  const city = variables.city ? variables.city : "";
+  const country = variables.country ? variables.country : "";
+
+  // Definición de variables de Redes Sociales
+  const socialLinks = {
+    twitter: variables.twitter,
+    github: variables.github,
+    linkedin: variables.linkedin,
+    instagram: variables.instagram
+  };
+
+  // Creación del link de redes sociales dinámico. Se utiliza función flecha y los valores de los campos de redes sociales
+  const socialHTML = Object.entries(socialLinks)
+    .filter(([_, username]) => username)
+    .map(
+      ([platform, username]) => `
+  <li>
+    <a href="https://${platform}.com/${username}">
+      <i class="fab fa-${platform}"></i>
+    </a>
+  </li>`
+    )
+    .join("");
+
+  // Creación de la condició para colocar los íconos de REdes sociales en la derecha o la izquierda
+  let socialPositionClass = "position-right"; // He dejado "Derecha" como predeterminado
+  if (variables.socialMediaPosition === "position-left") {
+    socialPositionClass = "position-left";
+  } else if (variables.socialMediaPosition === "position-right") {
+    socialPositionClass = "position-right";
+  }
+
   // reset the website body with the new html output
-  document.querySelector("#widget_content").innerHTML = `<div class="widget">
-            ${cover}
-          <img src="${variables.avatarURL}" class="photo" />
-          <h1>Lucy Boilett</h1>
-          <h2>Web Developer</h2>
-          <h3>Miami, USA</h3>
-          <ul class="position-right">
-            <li><a href="https://twitter.com/4geeksacademy"><i class="fab fa-twitter"></i></a></li>
-            <li><a href="https://github.com/4geeksacademy"><i class="fab fa-github"></i></a></li>
-            <li><a href="https://linkedin.com/school/4geeksacademy"><i class="fab fa-linkedin"></i></a></li>
-            <li><a href="https://instagram.com/4geeksacademy"><i class="fab fa-instagram"></i></a></li>
-          </ul>
-        </div>
-    `;
+  document.querySelector(
+    "#widget_content"
+  ).innerHTML = `<div class="widget">${cover}
+      <img src="${variables.avatarURL}" class="photo" />
+      <h1>${fullname}</h1>
+      <h2>${role}</h2>
+      <h3>${city}${city && country ? ", " : ""}${country}</h3>
+      <ul class="${socialPositionClass}">
+        ${socialHTML}
+      </ul>
+    </div>
+`;
 }
 
 /**
@@ -57,8 +94,8 @@ window.onload = function() {
     background: "https://images.unsplash.com/photo-1511974035430-5de47d3b95da",
     // this is the url for the profile avatar
     avatarURL: "https://randomuser.me/api/portraits/women/42.jpg",
-    // social media bar position (position-left or position-right)
-    socialMediaPosition: "position-right",
+    // social media bar position (left or right)
+    socialMediaPosition: "position-left",
     // social media usernames
     twitter: null,
     github: null,
